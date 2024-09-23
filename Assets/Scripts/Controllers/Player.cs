@@ -9,18 +9,24 @@ public class Player : MonoBehaviour
     public GameObject bombPrefab;
     public Transform bombsTransform;
 
-    public float velocity = 0.001f;
-    private int controlsH;
-    private int controlsV;
+    public Vector3 velocity = new Vector3(0f, 0f);
+    public float accelerationTime;
+    public float maxSpeed;
+    public float friction;
 
     void Update()
     {
-        playerMovement(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), velocity);
+        playerMovement(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), accelerationTime, maxSpeed);
     }
 
-    void playerMovement(float horizontal, float vertical, float velocity)
+    void playerMovement(float horizontal, float vertical, float accelTime, float maxSpd)
     {
-        transform.position = transform.position + new Vector3(horizontal * velocity * Time.deltaTime, vertical * velocity * Time.deltaTime);
+        float accel = (maxSpd * Time.deltaTime) / accelTime;
+        accel *= Time.deltaTime;
+        velocity += new Vector3(horizontal * accel, vertical * accel);
+        velocity *= 1 - (friction * Time.deltaTime);
+        transform.position = transform.position + velocity;
+        
     }
 
 }
