@@ -26,11 +26,16 @@ public class Player : MonoBehaviour
     void Update()
     {
         PlayerMovement(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), accelerationTime, maxSpeed, decelerationTime, maxDeceleration);
+        pointAtMouse();
         EnemyRadar(detectRadius, detectPoints);
 
         if(Input.GetKeyDown(KeyCode.P))
         {
             SpawnPowerups(powerupRadius, powerupCount);
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            launchBomb();
         }
     }
 
@@ -110,6 +115,25 @@ public class Player : MonoBehaviour
             
 
         }
+    }
+
+    void pointAtMouse()
+    {
+        Vector3 mouseActual = new Vector3();
+        mouseActual = Camera.main.ScreenToWorldPoint(Input.mousePosition); //get the mouse's position in world space
+        Vector3 target = new Vector3();
+        target = transform.position - mouseActual; //get the vector difference between player and mouse positions
+        float aim;
+        aim = Mathf.Atan2(target.y, target.x); //use target vector to calculate aim angle
+        
+        transform.rotation = Quaternion.identity; //reset rotation
+        transform.Rotate(0, 0, (Mathf.Rad2Deg * aim) + 90); //rotate to point at the mouse - adding 90 makes it face forward.
+    }
+
+    void launchBomb()
+    {
+        GameObject launchedBomb = Instantiate(bombPrefab, transform.position, transform.rotation);
+        launchedBomb.GetComponent<Bomb>().isLaunched = true; //create a bomb prefab, and update its "launched" status to true
     }
 
 }
